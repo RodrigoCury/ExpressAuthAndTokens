@@ -14,14 +14,24 @@ const USUARIOS_SCHEMA = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome VARCHAR(40) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL
+    senhaHash VARCHAR(255) NOT NULL
   )
   `;
+
+const updateFlag = false
+
+const UPDATE_COLUMN = `
+    ALTER TABLE USUARIOS
+    RENAME COLUMN senha TO senhaHash;
+`
 
 db.serialize(() => {
   db.run('PRAGMA foreign_keys=ON');
   db.run(POSTS_SCHEMA);
   db.run(USUARIOS_SCHEMA);
+  if (updateFlag) {
+    db.run(UPDATE_COLUMN);
+  }
 
   db.each('SELECT * FROM usuarios', (err, usuario) => {
     console.log('Usuarios: ');
